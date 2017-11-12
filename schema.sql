@@ -4,15 +4,16 @@ USE bamazon;
 
 CREATE TABLE products(
   id INTEGER(10) AUTO_INCREMENT NOT NULL,
-  product_product_name VARCHAR(20) NOT NULL,
+  product_name VARCHAR(20) NOT NULL,
   department_name VARCHAR(20),
-  price DECIMAL(10000, 2) NOT NULL,
-  stock_quantity INTEGER(1000) DEFAULT 0,
+  price DECIMAL(20, 2) NOT NULL,
+  stock_quantity INTEGER(100) DEFAULT 0,
   PRIMARY KEY (id)
 );
 
+ALTER TABLE products ADD COLUMN product_name VARCHAR(20) NOT NULL;
 
-
+ALTER TABLE products ADD COLUMN product_sales DECIMAL (20, 2) DEFAULT 0;
 
 INSERT INTO products (product_name, department_name, price, stock_quantity) values ('Desk', 'Furniture', 200, 5);
 INSERT INTO products (product_name, department_name, price, stock_quantity) values ('iPhoneX', 'Technology', 1000, 10);
@@ -24,4 +25,14 @@ INSERT INTO products (product_name, department_name, price, stock_quantity) valu
 INSERT INTO products (product_name, department_name, price, stock_quantity) values ('Toothbrush', 'Personal Care', 1.99, 50);
 INSERT INTO products (product_name, department_name, price, stock_quantity) values ('Eufy RoboVac', 'Home Goods', 249.99, 10);
 INSERT INTO products (product_name, department_name, price, stock_quantity) values ('The Martian', 'Books', 20, 5);
+
+
+CREATE TABLE departments(
+  department_id INTEGER(10) AUTO_INCREMENT NOT NULL,
+  department_name VARCHAR(20),
+  over_head_costs DECIMAL(20, 2) NOT NULL,
+  PRIMARY KEY (department_id)
+);
+
+
 

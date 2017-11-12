@@ -89,16 +89,43 @@ var userPrompt = function() {
 	})
 }
 
-
+Modify your bamazonCustomer.js app so that when a customer purchases anything from the store, 
+the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
 function givePrice(quantity, item) {
 	connection.query("SELECT price FROM products WHERE id=?", [item], function(err, res) {
 		var pricePerUnit = (res[0].price);
 		
 		var ammountDue = parseInt(quantity) * pricePerUnit ;
 		console.log("Your total is: ", ammountDue);
-		connection.end(); 
+		connection.query("UPDATE ")
+		updateRevenue(ammountDue, item);
 	})
 }
+
+
+function updateRevenue(ammountDue, item) {
+	connection.query("SELECT product_sales FROM products WHERE id=?", [item], function(err, res) {
+		console.log(res[0].product_sales);
+		var currentRevenue = res[0].product_sales;
+		var newRevenue = parseInt(currentRevenue) + ammountDue;
+		console.log(newRevenue);
+		// updateRevenue(ammountDue, item);
+		connection.query("UPDATE products SET ? WHERE ? ",
+			[
+				{
+					product_sales: newRevenue
+				},
+				{
+					id: item
+				}
+			],
+			function(err, res) {
+				connection.end()
+			}
+		)
+	})
+}
+
 
 
 
