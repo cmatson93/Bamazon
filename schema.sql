@@ -34,5 +34,16 @@ CREATE TABLE departments(
   PRIMARY KEY (department_id)
 );
 
+INSERT INTO departments (department_id, department_name, over_head_costs) values (1, 'Furniture', 25);
+INSERT INTO departments (department_id, department_name, over_head_costs) values (2, 'Technology', 80);
+INSERT INTO departments (department_id, department_name, over_head_costs) values (3, 'Home Goods', 50);
+INSERT INTO departments (department_id, department_name, over_head_costs) values (4, 'Games', 30);
+INSERT INTO departments (department_id, department_name, over_head_costs) values (5, 'Personal Care', 15);
+INSERT INTO departments (department_id, department_name, over_head_costs) values (6, 'Boods', 5);
+
+
+SELECT Orders.OrderID, Customers.CustomerName
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
 
 
