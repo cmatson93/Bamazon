@@ -2,6 +2,8 @@ var mysql = require("mysql");
 
 var inquirer = require("inquirer");
 
+require("console.table");
+
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -19,7 +21,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
+  // console.log("connected as id " + connection.threadId + "\n");
   getItems();
 });
 
@@ -29,10 +31,26 @@ var getItems = function() {
 	  if (err) throw err;
 	  // Log all results of the SELECT statement
 	  // console.log(res);
-	  for (var i = 0; i < res.length; i++) {
-	  	console.log(res[i]);
-	  	console.log("----------");
+	  function Row(id, product_name, price) {
+	  	this.id = id;
+	  	this.product_name = product_name;
+	  	this.price = price;
 	  }
+	  var values = [];
+	  for (var i = 0; i < res.length; i++) {
+	  	var row = new Row(res[i].id, res[i].product_name, res[i].price);
+	  	values.push(row);
+	  }
+	  // console.log(id);
+	  console.table(['id', 'product_name', 'price'], values);
+
+	  // for (var i = 0; i < res.length; i++) {
+	  // 	console.log("Id Number: ",res[i].id);
+	  // 	console.log("Item: ",res[i].product_name);
+	  // 	console.log("Price: ",res[i].price)
+	  // 	console.log("----------");
+	  // }
+
 	  userPrompt();
 	  
 	});
