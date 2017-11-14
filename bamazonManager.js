@@ -2,6 +2,8 @@ var mysql = require("mysql");
 
 var inquirer = require("inquirer");
 
+require("console.table");
+
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -18,7 +20,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
+  // console.log("connected as id " + connection.threadId + "\n");
   managerPrompt();
 });
 
@@ -28,7 +30,7 @@ var managerPrompt = function() {
 		name: "itemID",
 		type: "list",
 		message: "What would you like to do?",
-		choices: ['View Low Inventory', 'Add to Inventory', 'View Products for Sale', 'Add New Product']
+		choices: ['View Low Inventory', 'Add to Inventory', 'View Products for Sale', 'Add New Product', 'Quit']
 	}	
 	]).then(function(answer){
 		switch(answer.itemID) {
@@ -44,6 +46,8 @@ var managerPrompt = function() {
 			case "Add New Product":
 				addNewProduct();
 				break;
+			case "Quit":
+				connection.end();
 		}
 	})
 }
@@ -52,15 +56,21 @@ var managerPrompt = function() {
 
 //View Low Inventory, then it should list all items with an inventory count lower than five.
 var getLowInventory = function() {
-	connection.query("SELECT product_name FROM products WHERE stock_quantity < 5", function(err, res) {
+	connection.query("SELECT id, product_name, stock_quantity FROM products WHERE stock_quantity < 5", function(err, res) {
 	  if (err) throw err;
-	  // Log all results of the SELECT statement
-	  // console.log(res);
+	  
+	  var values = [];
+
 	  for (var i = 0; i < res.length; i++) {
-	  	console.log(res[i].product_name);
-	  	console.log("----------");
+	  	var row = [res[i].id ];
+	  	row.push(res[i].product_name);
+	  	row.push(res[i].stock_quantity);
+	  	values.push(row);
 	  }
-	  connection.end();
+
+	  console.table(['id', 'product_name', 'stock_quantity'], values);
+	  
+	  managerPrompt();
 	  
 	});
 };
@@ -69,7 +79,6 @@ var getLowInventory = function() {
 var addInventory = function() {
 	connection.query("SELECT * FROM products", function(err, results) {
 	  if (err) throw err;
-	  console.log(results);
 	inquirer
 	    .prompt([
 	        {
@@ -112,7 +121,7 @@ var addInventory = function() {
   	        	function(error) {
   	        		// if (error) throw err;
   	        		console.log("Inventory Added.");
-  	        		connection.end();
+  	        		managerPrompt();
   	        	}
   	        );
 	    })
@@ -120,15 +129,24 @@ var addInventory = function() {
 };
 //View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
 var viewProducts = function() {
+	console.log("Selecting all items for sale...\n");
 	connection.query("SELECT * FROM products", function(err, res) {
 	  if (err) throw err;
 	  // Log all results of the SELECT statement
-	  // console.log(res);
+
+	  var values = [];
+
 	  for (var i = 0; i < res.length; i++) {
-	  	console.log(res[i]);
-	  	console.log("----------");
+	  	var row = [res[i].id ];
+	  	row.push(res[i].product_name);
+	  	row.push(res[i].price);
+	  	values.push(row);
 	  }
-	  connection.end();
+
+	  console.table(['id', 'product_name', 'price'], values);
+
+	  
+	  managerPrompt();
 	  
 	});
 };
@@ -143,8 +161,9 @@ var addNewProduct = function() {
 	},
 	{
 		name: "department",
-		type: "input",
-		message: "What department is this item in?"
+		type: "list",
+		message: "What department is this item in?",
+		choices: ['Furniture', 'Technology', 'Home Goods', 'Games', 'Books', 'Sports and Outdoors', 'Personal Care']
 	},
 	{
 		name: "cost",
@@ -168,7 +187,7 @@ var addNewProduct = function() {
 			function(err) {
 				if (err) throw err;
 				console.log("Your item was added.");
-				connection.end();
+				managerPrompt();
 			}
 		
 		);

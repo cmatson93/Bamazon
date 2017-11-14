@@ -21,7 +21,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
+  // console.log("connected as id " + connection.threadId + "\n");
   userPrompt();
 });
 
@@ -33,15 +33,21 @@ var userPrompt = function() {
 	{
 		type: "list",
 		name: "options",
-		choices: ['View Product Sales by Department', 'Create New Department'],
+		choices: ['View Product Sales by Department', 'Create New Department', 'Quit'],
 		message: "What would you like to do<"
 	}	
 	]).then(function(answer){
-		if (answer.options === 'View Product Sales be Department') {
-			getTableData();
-		}
-		else {
-			addDepartment();
+		switch(answer.options) {
+			case 'View Product Sales by Department':
+				getTableData();
+				break;
+
+			case 'Create New Department':
+				addDepartment();
+				break;
+
+			case 'Quit':
+				connection.end();	
 		}
 	})
 }
@@ -56,24 +62,21 @@ var getTableData = function() {
 	// query += "products.department_name, products.total_profit ";
 	// query += "FROM departments INNER JOIN products ON (departments.department_name = products.department_name)";
 	connection.query(query, function(err, res) {
-		// console.log(res);
-		function Row(department_id, department_name, over_head_costs, product_sales, total_profit) {
-			this.department_id = department_id;
-			this.department_name = department_name;
-			this.over_head_costs = over_head_costs;
-			this.product_sales = product_sales;
-			this.total_profit = total_profit;
-		}
+
 		var values = [];
+
 		for (var i = 0; i < res.length; i++) {
+			var row = [res[i].department_id ];
+			row.push(res[i].department_name);
+			row.push(res[i].over_head_costs);
+			row.push(res[i].product_sales);
 			var total_profit = res[i].product_sales - res[i].over_head_costs;
-			var row = new Row(res[i].department_id, res[i].department_name, res[i].over_head_costs, res[i].product_sales, total_profit);
 			values.push(row);
 		}
-		// console.log(id);
+
 		console.table(['department_id', 'department_name', 'over_head_costs', 'product_sales', 'total_profit'], values);
 
-		connection.end();
+		userPrompt();
 	});
 }
 
@@ -99,7 +102,7 @@ var addDepartment = function() {
 			function(err) {
 				if (err) throw err;
 				console.log("Your department was added.");
-				connection.end();
+				userPrompt();
 			}
 		
 		);
