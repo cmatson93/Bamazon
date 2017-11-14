@@ -1,7 +1,6 @@
 # Bamazon
 
 ##Customer Run through of the Bamazon App
-bsk9-n4jSpk
 [![Customer](https://img.youtube.com/vi/bsk9-n4jSpk/0.jpg)](https://www.youtube.com/watch?v=bsk9-n4jSpk)
 
 ##Manager Run through of the Bamazon App
