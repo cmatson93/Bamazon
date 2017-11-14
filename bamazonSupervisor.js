@@ -37,8 +37,11 @@ var userPrompt = function() {
 		message: "What would you like to do<"
 	}	
 	]).then(function(answer){
-		if (answer.options = 'View Product Sales be Department') {
+		if (answer.options === 'View Product Sales be Department') {
 			getTableData();
+		}
+		else {
+			addDepartment();
 		}
 	})
 }
@@ -70,8 +73,37 @@ var getTableData = function() {
 		// console.log(id);
 		console.table(['department_id', 'department_name', 'over_head_costs', 'product_sales', 'total_profit'], values);
 
-		
+		connection.end();
 	});
+}
+
+var addDepartment = function() {
+	inquirer.prompt([
+	{
+		type: "input",
+		name: "department",
+		message: "What is the department name of the department you would like to add?"
+	},
+	{
+		type: "input",
+		name: "overhead",
+		message: "What are the over head costs for this department?"
+	}
+	]).then(function(answer){
+		connection.query(
+			"INSERT INTO departments SET ?",
+			{
+				department_name: answer.department,
+				over_head_costs: answer.overhead
+			},
+			function(err) {
+				if (err) throw err;
+				console.log("Your department was added.");
+				connection.end();
+			}
+		
+		);
+	})
 }
 
 
